@@ -1,0 +1,285 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #333;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1800px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    padding: 30px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #eee;
+}
+
+header h1 {
+    color: #2c3e50;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+header h1 i {
+    color: #667eea;
+    margin-right: 15px;
+}
+
+.timestamp {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.card h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #f8f9fa;
+    padding-bottom: 10px;
+}
+
+.card h2 i {
+    margin-right: 10px;
+    width: 30px;
+}
+
+/* Стили для статуса */
+.status-indicator {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.status-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 15px;
+    background-color: #95a5a6;
+    transition: background-color 0.3s ease;
+}
+
+.status-text {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #95a5a6;
+}
+
+.status-details p {
+    margin: 8px 0;
+    font-size: 1.1rem;
+}
+
+/* Стили для скорости */
+.speed-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    text-align: center;
+}
+
+.speed-item {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.speed-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.speed-icon.download { color: #3498db; }
+.speed-icon.upload { color: #e74c3c; }
+
+.speed-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.speed-label {
+    color: #7f8c8d;
+    font-size: 1rem;
+}
+
+/* Стили для информации */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.info-item {
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.info-value {
+    font-family: 'Courier New', monospace;
+    color: #34495e;
+    word-break: break-all;
+    font-size: 1.1rem;
+}
+
+/* Стили для трафика */
+.traffic-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    text-align: center;
+}
+
+.traffic-item {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.traffic-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.traffic-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #3498db;
+    margin-bottom: 5px;
+}
+
+.traffic-rate {
+    color: #7f8c8d;
+    font-size: 1rem;
+}
+
+/* Стили для процессов */
+.processes-container {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.processes-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.processes-table th {
+    background: #34495e;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    position: sticky;
+    top: 0;
+}
+
+.processes-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.processes-table tr:hover {
+    background: #f8f9fa;
+}
+
+/* Стили для логов */
+.logs-container {
+    max-height: 200px;
+    overflow-y: auto;
+    background: #2c3e50;
+    color: #ecf0f1;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+.log-entry {
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #eee;
+    color: #7f8c8d;
+    font-size: 1rem;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .container {
+        padding: 15px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .speed-grid,
+    .traffic-grid,
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}

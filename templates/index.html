@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Монитор сети</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-network-wired"></i> Монитор сетевого соединения</h1>
+            <div class="timestamp" id="timestamp">Обновление каждые 10 секунд</div>
+        </header>
+
+        <div class="grid-container">
+            <!-- Секция 1: Статус интернета -->
+            <div class="card status-card">
+                <h2><i class="fas fa-wifi"></i> Статус подключения</h2>
+                <div class="status-indicator" id="statusIndicator">
+                    <div class="status-dot"></div>
+                    <span class="status-text">Проверка...</span>
+                </div>
+                <div class="status-details">
+                    <p><strong>Пинг:</strong> <span id="pingValue">-</span> мс</p>
+                    <p><strong>Последнее отключение:</strong> <span id="lastDown">Никогда</span></p>
+                    <p><strong>HTTP статус:</strong> <span id="httpStatus">-</span></p>
+                </div>
+            </div>
+
+            <!-- Секция 2: Скорость интернета -->
+            <div class="card speed-card">
+                <h2><i class="fas fa-tachometer-alt"></i> Скорость соединения</h2>
+                <div class="speed-grid">
+                    <div class="speed-item">
+                        <i class="fas fa-download speed-icon download"></i>
+                        <div class="speed-value" id="downloadSpeed">0.00</div>
+                        <div class="speed-label">Мбит/с (входящ.)</div>
+                    </div>
+                    <div class="speed-item">
+                        <i class="fas fa-upload speed-icon upload"></i>
+                        <div class="speed-value" id="uploadSpeed">0.00</div>
+                        <div class="speed-label">Мбит/с (исходящ.)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Секция 3: Сетевая информация -->
+            <div class="card info-card">
+                <h2><i class="fas fa-info-circle"></i> Сетевая информация</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Внешний IP:</span>
+                        <span class="info-value" id="externalIP">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Локальный IP:</span>
+                        <span class="info-value" id="localIP">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">MAC-адрес:</span>
+                        <span class="info-value" id="macAddress">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Интерфейс:</span>
+                        <span class="info-value" id="interfaceName">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Имя хоста:</span>
+                        <span class="info-value" id="hostname">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Провайдер:</span>
+                        <span class="info-value" id="provider">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Секция 4: Использование трафика -->
+            <div class="card traffic-card">
+                <h2><i class="fas fa-chart-bar"></i> Использование трафика</h2>
+                <div class="traffic-grid">
+                    <div class="traffic-item">
+                        <div class="traffic-label">Отправлено:</div>
+                        <div class="traffic-value" id="sentTotal">0 MB</div>
+                        <div class="traffic-rate" id="sentRate">0 кбит/с</div>
+                    </div>
+                    <div class="traffic-item">
+                        <div class="traffic-label">Получено:</div>
+                        <div class="traffic-value" id="recvTotal">0 MB</div>
+                        <div class="traffic-rate" id="recvRate">0 кбит/с</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Секция 5: Сетевые процессы -->
+            <div class="card processes-card">
+                <h2><i class="fas fa-tasks"></i> Сетевые процессы</h2>
+                <div class="processes-container">
+                    <table class="processes-table">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>Имя</th>
+                                <th>Локальный адрес</th>
+                                <th>Удаленный адрес</th>
+                            </tr>
+                        </thead>
+                        <tbody id="processesTable">
+                            <tr><td colspan="4">Загрузка...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Секция 6: Логи -->
+            <div class="card logs-card">
+                <h2><i class="fas fa-clipboard-list"></i> Последние события</h2>
+                <div class="logs-container">
+                    <div id="logsContent">
+                        <p>Загрузка логов...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Система мониторинга сети | Автообновление: каждые 10 секунд | <span id="updateTime">-</span></p>
+        </footer>
+    </div>
+
+    <script>
+        function updateDashboard() {
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(data => {
+                    // Обновление времени
+                    document.getElementById('timestamp').textContent = 
+                        `Последнее обновление: ${data.timestamp}`;
+                    document.getElementById('updateTime').textContent = data.timestamp;
+
+                    // Статус подключения
+                    const statusIndicator = document.getElementById('statusIndicator');
+                    const statusDot = statusIndicator.querySelector('.status-dot');
+                    const statusText = statusIndicator.querySelector('.status-text');
+                    const pingValue = document.getElementById('pingValue');
+                    const lastDown = document.getElementById('lastDown');
+                    const httpStatus = document.getElementById('httpStatus');
+
+                    if (data.availability.available) {
+                        statusDot.style.backgroundColor = '#2ecc71';
+                        statusText.textContent = 'Онлайн';
+                        statusText.style.color = '#2ecc71';
+                        if (data.availability.ping) {
+                            pingValue.textContent = data.availability.ping;
+                            pingValue.style.color = data.availability.ping < 50 ? '#2ecc71' : 
+                                                   data.availability.ping < 100 ? '#f39c12' : '#e74c3c';
+                        }
+                    } else {
+                        statusDot.style.backgroundColor = '#e74c3c';
+                        statusText.textContent = 'Офлайн';
+                        statusText.style.color = '#e74c3c';
+                        pingValue.textContent = '-';
+                        pingValue.style.color = '#7f8c8d';
+                    }
+                    
+                    lastDown.textContent = data.last_down;
+                    httpStatus.textContent = data.availability.status_code || '-';
+
+                    // Скорость
+                    if (data.speed.download) {
+                        document.getElementById('downloadSpeed').textContent = 
+                            data.speed.download.toFixed(2);
+                    }
+                    if (data.speed.upload) {
+                        document.getElementById('uploadSpeed').textContent = 
+                            data.speed.upload.toFixed(2);
+                    }
+
+                    // Сетевая информация
+                    document.getElementById('externalIP').textContent = data.network_info.external_ip;
+                    document.getElementById('localIP').textContent = data.network_info.local_ip;
+                    document.getElementById('macAddress').textContent = data.network_info.mac_address;
+                    document.getElementById('interfaceName').textContent = data.network_info.interface_name;
+                    document.getElementById('hostname').textContent = data.network_info.hostname;
+                    document.getElementById('provider').textContent = data.network_info.provider;
+
+                    // Трафик
+                    document.getElementById('sentTotal').textContent = 
+                        `${data.traffic.sent_total_mb} MB`;
+                    document.getElementById('recvTotal').textContent = 
+                        `${data.traffic.recv_total_mb} MB`;
+                    document.getElementById('sentRate').textContent = 
+                        `${data.traffic.sent_rate_kbps} кбит/с`;
+                    document.getElementById('recvRate').textContent = 
+                        `${data.traffic.recv_rate_kbps} кбит/с`;
+
+                    // Процессы
+                    const processesTable = document.getElementById('processesTable');
+                    if (data.processes.length > 0) {
+                        let tableHTML = '';
+                        data.processes.slice(0, 5).forEach(proc => {
+                            tableHTML += `
+                                <tr>
+                                    <td>${proc.pid}</td>
+                                    <td>${proc.name}</td>
+                                    <td>${proc.local_address}</td>
+                                    <td>${proc.remote_address}</td>
+                                </tr>
+                            `;
+                        });
+                        processesTable.innerHTML = tableHTML;
+                    } else {
+                        processesTable.innerHTML = '<tr><td colspan="4">Нет активных соединений</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при получении данных:', error);
+                    document.getElementById('statusIndicator').querySelector('.status-text').textContent = 'Ошибка';
+                });
+
+            // Загружаем логи
+            fetch('/api/logs')
+                .then(response => response.json())
+                .then(data => {
+                    const logsContent = document.getElementById('logsContent');
+                    if (data.logs && data.logs.length > 0) {
+                        logsContent.innerHTML = '';
+                        data.logs.slice(-10).forEach(log => {
+                            const p = document.createElement('p');
+                            p.textContent = log;
+                            p.className = 'log-entry';
+                            if (log.includes('ERROR') || log.includes('CRITICAL')) {
+                                p.style.color = '#e74c3c';
+                            } else if (log.includes('WARNING')) {
+                                p.style.color = '#f39c12';
+                            }
+                            logsContent.appendChild(p);
+                        });
+                    }
+                });
+        }
+
+        // Первое обновление
+        updateDashboard();
+
+        // Автообновление каждые 10 секунд
+        setInterval(updateDashboard, 10000);
+
+        // Обновляем время каждую секунду
+        function updateCurrentTime() {
+            const now = new Date();
+            document.getElementById('updateTime').textContent = 
+                now.toLocaleTimeString('ru-RU');
+        }
+        setInterval(updateCurrentTime, 1000);
+        updateCurrentTime();
+    </script>
+</body>
+</html>
